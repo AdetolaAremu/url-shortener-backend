@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon --exec npx ts-node ./index.ts",
+    "prod": "node ts-node ./index.ts"
   },
   "keywords": [],
   "author": "",
@@ -11,6 +12,7 @@
   "description": "",
   "dependencies": {
     "body-parser": "^2.2.0",
+    "class-validator": "^0.14.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -18,8 +20,10 @@
     "geoip-lite": "^1.4.10",
     "helmet": "^8.1.0",
     "ioredis": "^5.6.1",
+    "nodemon": "^3.1.10",
     "pg": "^8.15.6",
     "reflect-metadata": "^0.2.2",
+    "sanitize-html": "^2.16.0",
     "typeorm": "^0.3.22",
     "xss-clean": "^0.1.4"
   },

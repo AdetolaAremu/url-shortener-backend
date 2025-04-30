@@ -18,7 +18,7 @@
       "@routes/*": ["v1/routes/*"],
       "@notifications/*": ["v1/notifications/*"],
       "@migrations/*": ["v1/migrations/*"],
-      "@util/*": ["v1/util/*"],
+      "@util/*": ["../../v1/util/*"],
       "@middlewares/*": ["v1/middlewares/*"]
     }
   }

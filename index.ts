@@ -4,11 +4,13 @@ import http from "http";
 import { NextFunction, Response, Request } from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import xss from "xss-clean";
 import cors from "cors";
+// import xss from "xss-clean";
 import bodyParser from "body-parser";
-import appError from "v1/utils/AppError";
-import globalErrorHandler from "v1/utils/GlobalErrorHandler";
+import appError from "./src/v1/utils/AppError";
+import globalErrorHandler from "./src/v1/utils/GlobalErrorHandler";
+import shortenedRoute from "./src/v1/routes/Shortener.route";
+import sanitizeHtml from "sanitize-html";
 
 dotenv.config();
 
@@ -17,9 +19,20 @@ const app = express();
 app.use(helmet());
 app.use(cors({ credentials: true, origin: true }));
 
+// Body parsers first
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json({ limit: "10kb" }));
+
+// app.use(xss());
+app.use((req, res, next) => {
+  if (req.body) {
+    for (const key in req.body) {
+      req.body[key] = sanitizeHtml(req.body[key]);
+    }
+  }
+  next();
+});
 
 const limiter = rateLimit({
   max: 1000,
@@ -29,12 +42,10 @@ const limiter = rateLimit({
 
 app.use("/api", limiter);
 
-app.use(xss());
+// ROUTES
+app.use("/api/v1", shortenedRoute);
 
-// Your routes would go here
-// app.use('/api/v1/users', userRouter);
-
-app.use("*", (req: Request, res: Response, next: NextFunction) => {
+app.use(/(.*)/, (req: Request, res: Response, next: NextFunction) => {
   next(new appError(`Cannot find ${req.originalUrl} on this server`, 404));
 });
 
