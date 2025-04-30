@@ -137,6 +137,7 @@ export class shortenerService {
 
   static async getStatsForShortCode(shortCode: string) {
     const meta = await redis.hgetall(`meta:${shortCode}`);
+
     if (!meta || !meta.id) {
       return null;
     }
@@ -161,12 +162,41 @@ export class shortenerService {
       ["unknown", "0"]
     )[0];
 
+    const visitLogsRaw = await redis.lrange(`stat:${shortenerId}`, 0, -1);
+    const allHits = visitLogsRaw
+      .map((entry) => {
+        try {
+          return JSON.parse(entry);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    // last 15 hits
+    const visitLogsRawForFifteen = await redis.lrange(
+      `stat:${shortenerId}`,
+      -15,
+      -1
+    );
+    const las15Hits = visitLogsRawForFifteen
+      .map((entry) => {
+        try {
+          return JSON.parse(entry);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+
     return {
       shortCode,
       originalURL: meta.originalURL,
       generatedURL: meta.generatedURL,
       mostVisitedCountry,
       mostVisitedRegion,
+      totalHits: allHits.length,
+      las15Hits,
     };
   }
 }
