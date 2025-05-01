@@ -17,13 +17,15 @@ export const encodeURL = catchAsync(async (req: Request, res: Response) => {
   await validateInput(shortenerDTO); // move to middleware (maybe)
 
   // check if the url exists in the redis/db already
-  const checkIfUrlExist = await shortenerService.getByShortenedUrl(
+  const checkIfUrlExist = await shortenerService.getByOriginalUrl(
     shortenerDTO.url
   );
 
   // if it exists then return it
   if (checkIfUrlExist)
-    return successResponse(res, "Link generated successfully", checkIfUrlExist);
+    return successResponse(res, "Link generated successfully", {
+      shortenedlink: checkIfUrlExist.generatedURL,
+    });
 
   // else
   // generate a unique random string as short code and encode it
