@@ -91,7 +91,7 @@ export const urlRedirection = catchAsync(
       userAgent
     );
 
-    res.redirect(getByShortenedUrl.originalURL);
+    res.redirect(301, getByShortenedUrl.originalURL);
   }
 );
 
