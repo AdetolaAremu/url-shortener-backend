@@ -84,7 +84,7 @@ export const urlRedirection = catchAsync(
 
     const { ipAddress, userAgent } = getIPAndAgentInfo(req);
 
-    // save the stat
+    // save the stat (this should be a job in real life scenario)
     await shortenerService.createStatAuditTrail(
       getByShortenedUrl.id,
       ipAddress,
@@ -103,11 +103,20 @@ export const urlStatistics = catchAsync(async (req: Request, res: Response) => {
   if (!getByShortenedUrl) return failResponse(res, "Url does not exists", 404);
 
   const getStats = await shortenerService.getStatsForShortCode(shortCode);
-  console.log("statiiiii", getStats);
 
   return successResponse(res, "Statistics retrieved successfully", getStats);
 });
 
 export const allURL = catchAsync(async (req: Request, res: Response) => {
-  // return successResponse(res, 201, "Account created successfully", newUser);
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 15;
+  const searchQuery = (req.query.searchQuery as string) || "";
+
+  const shortenedURL = await shortenerService.getAllShortenedURLs(
+    page,
+    limit,
+    searchQuery
+  );
+
+  return successResponse(res, "All urls retrieved successfully", shortenedURL);
 });

@@ -1,4 +1,5 @@
 import {
+  allURL,
   decodeURL,
   encodeURL,
   urlRedirection,
@@ -10,7 +11,8 @@ const router = express.Router();
 
 router.post("/encode", encodeURL);
 router.post("/decode", decodeURL);
+router.get("/list", allURL);
 router.get("/:url_path", urlRedirection);
-router.get("/statistic/:shortCode", urlStatistics);
+router.get("/statistics/:shortCode", urlStatistics);
 
 export default router;

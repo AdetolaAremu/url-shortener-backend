@@ -199,4 +199,60 @@ export class shortenerService {
       las15Hits,
     };
   }
+
+  static async getAllShortenedURLs(
+    page: number = 1,
+    limit: number = 10,
+    search: string = ""
+  ) {
+    const shortCodes: string[] = [];
+    let cursor = "0";
+
+    do {
+      const [nextCursor, keys] = await redis.scan(
+        cursor,
+        "MATCH",
+        "meta:*",
+        "COUNT",
+        "100"
+      );
+      cursor = nextCursor;
+      shortCodes.push(...keys.map((key) => key.replace("meta:", "")));
+    } while (cursor !== "0");
+
+    const allStats = await Promise.all(
+      shortCodes.map((code) => shortenerService.getStatsForShortCode(code))
+    );
+
+    const filtered = allStats.filter(Boolean);
+
+    let searched = search
+      ? filtered.filter(
+          (entry) =>
+            entry.originalURL.toLowerCase().includes(search.toLowerCase()) ||
+            entry.generatedURL.toLowerCase().includes(search.toLowerCase())
+        )
+      : filtered;
+
+    searched = searched.sort((a, b) => b.totalHits - a.totalHits);
+
+    const resultsWithoutLast15Hits = searched.map(
+      ({ las15Hits, ...rest }) => rest
+    );
+
+    const total = resultsWithoutLast15Hits.length;
+    const totalPages = Math.ceil(total / limit);
+    const paginated = resultsWithoutLast15Hits.slice(
+      (page - 1) * limit,
+      page * limit
+    );
+
+    return {
+      paginated,
+      page,
+      limit,
+      total,
+      totalPages,
+    };
+  }
 }
