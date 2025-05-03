@@ -35,11 +35,11 @@ export const encodeURL = catchAsync(async (req: Request, res: Response) => {
     await UrlShortenerService.computegenerateStringAndUrl(generateCode);
 
   // save it alongisde the decoded url
-  const createShortenedLink = await UrlShortenerService.createUrlShortener(
-    shortenerDTO,
-    generateCode,
-    computeGeneratedlink
-  );
+  // const createShortenedLink = await UrlShortenerService.createUrlShortener(
+  //   shortenerDTO,
+  //   generateCode,
+  //   computeGeneratedlink
+  // );
 
   return successResponse(
     res,
