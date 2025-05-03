@@ -1,5 +1,5 @@
 import { createShortenerDto } from "../dto/Shortener.dto";
-import { shortenerService } from "../services/UrlShortener.service";
+import { UrlShortenerService } from "../services/UrlShortener.service";
 import { Response, Request, NextFunction } from "express";
 import catchAsync from "../../v1/utils/CatchAsync";
 import {
@@ -17,7 +17,7 @@ export const encodeURL = catchAsync(async (req: Request, res: Response) => {
   await validateInput(shortenerDTO); // move to middleware (maybe)
 
   // check if the url exists in the redis/db already
-  const checkIfUrlExist = await shortenerService.getByOriginalUrl(
+  const checkIfUrlExist = await UrlShortenerService.getByOriginalUrl(
     shortenerDTO.url
   );
 
@@ -32,10 +32,10 @@ export const encodeURL = catchAsync(async (req: Request, res: Response) => {
   const generateCode = generateCryptoCode();
 
   const computeGeneratedlink =
-    await shortenerService.computegenerateStringAndUrl(generateCode);
+    await UrlShortenerService.computegenerateStringAndUrl(generateCode);
 
   // save it alongisde the decoded url
-  const createShortenedLink = await shortenerService.createUrlShortener(
+  const createShortenedLink = await UrlShortenerService.createUrlShortener(
     shortenerDTO,
     generateCode,
     computeGeneratedlink
@@ -46,7 +46,7 @@ export const encodeURL = catchAsync(async (req: Request, res: Response) => {
     "Link generated successfully",
     {
       shortenedlink: computeGeneratedlink,
-      createdRecord: createShortenedLink,
+      // createdRecord: createShortenedLink,
     },
     201
   );
@@ -65,7 +65,7 @@ export const decodeURL = catchAsync(async (req: Request, res: Response) => {
     );
 
   // check if it exits in the redis/db
-  const getUrl = await shortenerService.getByShortenedUrl(shortenerDTO.url);
+  const getUrl = await UrlShortenerService.getByShortenedUrl(shortenerDTO.url);
 
   if (!getUrl) return failResponse(res, "Url does not exists", 404);
 
@@ -77,7 +77,9 @@ export const urlRedirection = catchAsync(
     const { url_path } = req.params;
 
     // check if it exits in the redis/db
-    const getByShortenedUrl = await shortenerService.getByShortCode(url_path);
+    const getByShortenedUrl = await UrlShortenerService.getByShortCode(
+      url_path
+    );
 
     if (!getByShortenedUrl)
       return failResponse(res, "Url does not exists", 404);
@@ -85,7 +87,7 @@ export const urlRedirection = catchAsync(
     const { ipAddress, userAgent } = getIPAndAgentInfo(req);
 
     // save the stat (this should be a job in real life scenario)
-    await shortenerService.createStatAuditTrail(
+    await UrlShortenerService.createStatAuditTrail(
       getByShortenedUrl.id,
       ipAddress,
       userAgent
@@ -98,11 +100,11 @@ export const urlRedirection = catchAsync(
 export const urlStatistics = catchAsync(async (req: Request, res: Response) => {
   const { shortCode } = req.params;
 
-  const getByShortenedUrl = await shortenerService.getByShortCode(shortCode);
+  const getByShortenedUrl = await UrlShortenerService.getByShortCode(shortCode);
 
   if (!getByShortenedUrl) return failResponse(res, "Url does not exists", 404);
 
-  const getStats = await shortenerService.getStatsForShortCode(shortCode);
+  const getStats = await UrlShortenerService.getStatsForShortCode(shortCode);
 
   return successResponse(res, "Statistics retrieved successfully", getStats);
 });
@@ -112,7 +114,7 @@ export const allURL = catchAsync(async (req: Request, res: Response) => {
   const limit = parseInt(req.query.limit as string) || 15;
   const searchQuery = (req.query.searchQuery as string) || "";
 
-  const shortenedURL = await shortenerService.getAllShortenedURLs(
+  const shortenedURL = await UrlShortenerService.getAllShortenedURLs(
     page,
     limit,
     searchQuery

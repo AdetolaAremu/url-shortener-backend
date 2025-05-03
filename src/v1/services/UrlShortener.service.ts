@@ -7,7 +7,7 @@ import { uuidv4 } from "../../v1/utils/Helper";
 const redis = new Redis();
 dotenv.config();
 
-export class shortenerService {
+export class UrlShortenerService {
   static async createUrlShortener(
     urlDto: createShortenerDto,
     generatedString: string,
@@ -221,7 +221,7 @@ export class shortenerService {
     } while (cursor !== "0");
 
     const allStats = await Promise.all(
-      shortCodes.map((code) => shortenerService.getStatsForShortCode(code))
+      shortCodes.map((code) => UrlShortenerService.getStatsForShortCode(code))
     );
 
     const filtered = allStats.filter(Boolean);
