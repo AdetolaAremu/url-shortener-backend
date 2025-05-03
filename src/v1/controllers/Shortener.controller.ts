@@ -1,6 +1,6 @@
 import { createShortenerDto } from "../dto/Shortener.dto";
 import { UrlShortenerService } from "../services/UrlShortener.service";
-import { Response, Request, NextFunction } from "express";
+import { Response, Request } from "express";
 import catchAsync from "../../v1/utils/CatchAsync";
 import {
   failResponse,
@@ -34,19 +34,11 @@ export const encodeURL = catchAsync(async (req: Request, res: Response) => {
   const computeGeneratedlink =
     await UrlShortenerService.computegenerateStringAndUrl(generateCode);
 
-  // save it alongisde the decoded url
-  // const createShortenedLink = await UrlShortenerService.createUrlShortener(
-  //   shortenerDTO,
-  //   generateCode,
-  //   computeGeneratedlink
-  // );
-
   return successResponse(
     res,
     "Link generated successfully",
     {
       shortenedlink: computeGeneratedlink,
-      // createdRecord: createShortenedLink,
     },
     201
   );

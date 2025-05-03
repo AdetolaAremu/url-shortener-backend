@@ -50,7 +50,6 @@ describe("POST /api/v1/encode", () => {
 
     expect(response.status).toBe(201);
     expect(mockedService.getByOriginalUrl).toHaveBeenCalled();
-    // expect(mockedService.createUrlShortener).toHaveBeenCalled();
   });
 });
 

@@ -95,9 +95,9 @@ export class UrlShortenerService {
 
     const geo = geoip.lookup(ip || "");
 
-    console.log("IP", ip);
-    console.log("agent", agent);
-    console.log("geo", geo);
+    // console.log("IP", ip);
+    // console.log("agent", agent);
+    // console.log("geo", geo);
 
     const visitData = {
       ip,
