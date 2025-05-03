@@ -9,6 +9,8 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
       "@controllers/*": ["v1/controllers/*"],
@@ -18,8 +20,9 @@
       "@routes/*": ["v1/routes/*"],
       "@notifications/*": ["v1/notifications/*"],
       "@migrations/*": ["v1/migrations/*"],
-      "@util/*": ["v1/util/*"],
+      "@util/*": ["../../v1/util/*"],
       "@middlewares/*": ["v1/middlewares/*"]
     }
-  }
+  },
+  "include": ["src", "index.ts", "tests"]
 }
